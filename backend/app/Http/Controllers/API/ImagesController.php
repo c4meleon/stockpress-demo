@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\API;
 
+use App\Http\Requests\ImageUploadRequest;
 use App\Interfaces\ImageLocalStorageServiceInterface;
 use App\Interfaces\ImageServiceInterface;
 use App\Interfaces\ImageUploadServiceInterface;
@@ -32,7 +33,7 @@ class ImagesController extends Controller
         return response()->json($photos);
     }
 
-    public function upload(Request $request): JsonResponse
+    public function upload(ImageUploadRequest $request): JsonResponse
     {
         try {
             $image = $this->imageUploadService->handleUpload($request);

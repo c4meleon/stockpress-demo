@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\DTO\ImageData;
+use App\Http\Requests\ImageUploadRequest;
 use App\Interfaces\ImageServiceInterface;
 use App\Interfaces\ImageUploadServiceInterface;
 use App\Interfaces\ImageUrlGeneratorServiceInterface;
@@ -20,15 +21,13 @@ class ImageUploadService implements ImageUploadServiceInterface
     {
     }
 
-    public function handleUpload(Request $request): Images
+    public function handleUpload(ImageUploadRequest $request): Images
     {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'image' => 'required|file|mimes:jpg,jpeg,png,webp,tiff,bmp|max:5120',
-        ]);
-
         $imageFile = $request->file('image');
+        if (!$imageFile->isValid()) {
+            throw new \Exception('No image file uploaded.');
+        }
+
         $originalFileName = $imageFile->getClientOriginalName();
         $realPath = $imageFile->getRealPath();
 
