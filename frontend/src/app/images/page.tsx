@@ -88,24 +88,17 @@ const Images: React.FC = () => {
                     key={id}
                     className="flex flex-col items-center justify-center relative"
                   >
-                    {/* <a
-                      className="flex flex-col items-center justify-center"
-                      href={`${image_url}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    > */}
-                      <img
-                        src={`${image_thumbnails["250xauto"]}`}
-                        alt={`Thumbnail for ${image_url.split("/").pop()}`}
-                        style={{
-                          width: "250px",
-                          height: "250px",
-                          objectFit: "cover",
-                          borderRadius: "8px",
-                        }}
-                      />
-                      <p>{image_name}</p>
-                    {/* </a> */}
+                    <img
+                      src={`${image_thumbnails["250xauto"]}`}
+                      alt={`Thumbnail for ${image_url.split("/").pop()}`}
+                      style={{
+                        width: "250px",
+                        height: "250px",
+                        objectFit: "cover",
+                        borderRadius: "8px",
+                      }}
+                    />
+                    <p>{image_name}</p>
                     <span>
                       <strong>Uploaded by:</strong>
                       {name} ({email})
