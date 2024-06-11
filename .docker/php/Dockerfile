@@ -17,7 +17,8 @@ RUN apt-get update && apt-get install -y \
     libwebp-dev \
     libtiff-dev \
     libicu-dev \
-    libmagickwand-dev
+    libmagickwand-dev \
+    netcat-openbsd
 
 RUN pecl install imagick && docker-php-ext-enable imagick
 
@@ -30,6 +31,7 @@ WORKDIR /var/www/stockpress
 
 COPY ./backend/ /var/www/stockpress
 
+COPY ./.docker/php/php.ini /usr/local/etc/php/conf.d/custom.ini
 COPY ./.docker/php/entrypoint.sh /usr/local/bin/entrypoint.sh
 
 RUN chmod +x /usr/local/bin/entrypoint.sh

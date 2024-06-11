@@ -90,8 +90,8 @@ export const uploadImages = async (file: File, name: string, email: string): Pro
       if (!error.response) {
         throw new Error("Network Error");
       }
-
-      const serverError = error.response?.data as UploadImagesError;
+      
+      const serverError = error.response?.data.errors as UploadImagesError;
       throw new Error(serverError.message);
     }
     throw error;

@@ -1,6 +1,19 @@
 version: '3.8'
 
 services:
+  stockpress-db:
+    image: mysql:latest
+    container_name: stockpress-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: stockpress
+      MYSQL_USER: stockpress
+      MYSQL_PASSWORD: password
+    volumes:
+      - stockpress-db_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
   stockpress-nginx:
     image: nginx:latest
     container_name: stockpress-nginx
@@ -8,7 +21,7 @@ services:
       - "80:80"
     volumes:
       - ./backend:/var/www/stockpress
-      - ./.docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro    
+      - ./.docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - stockpress-php
 
@@ -27,29 +40,24 @@ services:
       - DB_PASSWORD=password
     depends_on:
       - stockpress-db
+      - stockpress-redis
 
-  stockpress-db:
-    image: mysql:latest
-    container_name: stockpress-db
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: stockpress
-      MYSQL_USER: stockpress
-      MYSQL_PASSWORD: password
-    volumes:
-      - stockpress-db_data:/var/lib/mysql
+  stockpress-redis:
+    image: redis:latest
+    container_name: stockpress-redis
     ports:
-      - "3306:3306"
+      - "6379:6379"
 
   stockpress-frontend:
     build:
       context: .
       dockerfile: .docker/node/Dockerfile
     container_name: stockpress-frontend
-    volumes:
-      - ./frontend:/app
     ports:
       - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
     depends_on:
       - stockpress-php
 

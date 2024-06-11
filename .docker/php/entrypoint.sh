@@ -2,6 +2,14 @@
 
 set -e
 
+function wait_for_db() {
+    echo "Waiting for database to be ready..."
+    while ! nc -z stockpress-db 3306; do
+        sleep 1
+    done
+    echo "Database is ready."
+}
+
 function file_exists() {
     [ -f "$1" ] || [ -d "$1" ]
 }
@@ -18,6 +26,8 @@ else
     echo "No composer.lock file, installing dependencies from composer.json..."
     composer install --no-dev --optimize-autoloader
 fi
+
+wait_for_db
 
 echo "Running database migrations..."
 php artisan migrate --force
