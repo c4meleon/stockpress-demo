@@ -59,7 +59,12 @@ class ImageService implements ImageServiceInterface
     {
         try {
             $image = Images::findOrFail($id);
-            $this->imageStorageService->delete($image->image_name);
+            $this->imageStorageService->delete($image->image_unique_name);
+
+            foreach($image->image_thumbnails as $key => $thumbnail) {
+                $this->imageStorageService->deleteThumbnail($key . DIRECTORY_SEPARATOR . $image->image_unique_name);
+            }
+
             $image->delete();
         } catch (\Exception $e) {
             throw new \Exception($e->getMessage());

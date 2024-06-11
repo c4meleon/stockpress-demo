@@ -15,4 +15,6 @@ interface ImageLocalStorageServiceInterface
     public function download(string $filePath): StreamedResponse;
 
     public function delete(string $filePath): void;
+
+    public function deleteThumbnail(string $filePath): void;
 }

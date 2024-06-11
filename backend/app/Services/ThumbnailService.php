@@ -5,12 +5,20 @@ declare(strict_types=1);
 namespace App\Services;
 
 use App\Interfaces\ThumbnailServiceInterface;
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
 use Intervention\Image\EncodedImage;
 use Intervention\Image\Laravel\Facades\Image;
 
 class ThumbnailService implements ThumbnailServiceInterface
 {
+    private Filesystem $thumbnailDisk;
+
+    public function __construct()
+    {
+        $this->thumbnailDisk = Storage::disk('thumbnails');
+    }
+
     /**
      * @throws \Exception
      */
@@ -29,10 +37,10 @@ class ThumbnailService implements ThumbnailServiceInterface
         $thumbnailPath = ($width ?? 'auto') . 'x' . ($height ?? 'auto') . '/' . $fileName;
 
         /** @var EncodedImage $thumbnail */
-        if (!Storage::disk('thumbnails')->put($thumbnailPath, (string) $thumbnail->encode())) {
+        if (!$this->thumbnailDisk->put($thumbnailPath, (string) $thumbnail->encode())) {
             throw new \Exception('Failed to save thumbnail.');
         }
 
-        return Storage::disk('thumbnails')->path($thumbnailPath);
+        return $this->thumbnailDisk->path($thumbnailPath);
     }
 }

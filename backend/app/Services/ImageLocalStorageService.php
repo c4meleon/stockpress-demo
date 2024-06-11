@@ -11,11 +11,13 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class ImageLocalStorageService implements ImageLocalStorageServiceInterface
 {
-    private Filesystem $disk;
+    private Filesystem $imageDisk;
+    private Filesystem $thumbnailDisk;
 
     public function __construct()
     {
-        $this->disk = Storage::disk('images');
+        $this->imageDisk = Storage::disk('images');
+        $this->thumbnailDisk = Storage::disk('thumbnails');
     }
 
     /**
@@ -23,25 +25,30 @@ class ImageLocalStorageService implements ImageLocalStorageServiceInterface
      */
     public function save(string $filePath, string $fileBody): string
     {
-        if (!$this->disk->put($filePath, $fileBody)) {
+        if (!$this->imageDisk->put($filePath, $fileBody)) {
             throw new \Exception('Failed to store the image.');
         }
 
-        return $this->disk->path($filePath);
+        return $this->imageDisk->path($filePath);
     }
 
     public function get(string $filePath): ?string
     {
-        return $this->disk->get($filePath);
+        return $this->imageDisk->get($filePath);
     }
 
     public function download(string $filePath): StreamedResponse
     {
-        return $this->disk->download($filePath);
+        return $this->imageDisk->download($filePath);
     }
 
     public function delete(string $filePath): void
     {
-        $this->disk->delete($filePath);
+        $this->imageDisk->delete($filePath);
+    }
+
+    public function deleteThumbnail(string $filePath): void
+    {
+        $this->thumbnailDisk->delete($filePath);
     }
 }
