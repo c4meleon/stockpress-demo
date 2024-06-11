@@ -14,6 +14,5 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        Images::factory()->count(40)->create();
     }
 }

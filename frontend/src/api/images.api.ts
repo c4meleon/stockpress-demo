@@ -9,7 +9,7 @@ export interface FetchImagesParams {
 }
 
 interface ImageThumbnail {
-  '250x250': string;
+  '250xauto': string;
 }
 
 interface ImageMetadata {

@@ -73,7 +73,7 @@ const Upload: React.FC = () => {
             ? {
                 ...fileStatus,
                 status: "success",
-                url: data.image.image_thumbnails["250x250"],
+                url: data.image.image_thumbnails["250xauto"],
               }
             : fileStatus
         )

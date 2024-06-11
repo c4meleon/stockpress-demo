@@ -32,9 +32,9 @@ class ImageService implements ImageServiceInterface
         return $this->imageStorageService->save($fileName, $fileBody);
     }
 
-    public function generateThumbnails(string $fileName, string $filePath, string $size): array
+    public function generateThumbnails(string $fileName, string $filePath, ?int $width = null, ?int $height = null): string
     {
-        return $this->thumbnailService->generate($fileName, $filePath, $size);
+        return $this->thumbnailService->generate($fileName, $filePath, $width, $height);
     }
 
     #[ArrayShape(['width' => "int", 'height' => "int"])]

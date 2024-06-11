@@ -36,7 +36,11 @@ class ImagesController extends Controller
     public function upload(ImageUploadRequest $request): JsonResponse
     {
         try {
-            $image = $this->imageUploadService->handleUpload($request);
+            $image = $this->imageUploadService->handleUpload(
+                $request->file('image'),
+                $request->get('name'),
+                $request->get('email')
+            );
             return response()->json(['message' => 'File uploaded successfully.', 'image' => $image]);
         } catch (\Exception $e) {
             return response()->json(['message' => 'Failed to upload file'], 500);

@@ -8,7 +8,7 @@ interface ImageServiceInterface
 {
     public function save(string $fileName, string $filePath): string;
 
-    public function generateThumbnails(string $fileName, string $filePath, string $size): array;
+    public function generateThumbnails(string $fileName, string $filePath, ?int $width, ?int $height): string;
 
     public function getExifData(string $filePath): array;
 

@@ -95,7 +95,7 @@ const Images: React.FC = () => {
                       rel="noopener noreferrer"
                     >
                       <img
-                        src={`${image_thumbnails["250x250"]}`}
+                        src={`${image_thumbnails["250xauto"]}`}
                         alt={`Thumbnail for ${image_url.split("/").pop()}`}
                         style={{
                           width: "250px",

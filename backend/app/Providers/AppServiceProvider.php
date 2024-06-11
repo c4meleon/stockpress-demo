@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Builders\MetadataBuilder;
+use App\Builders\MetadataBuilderInterface;
 use App\Interfaces\ImageNameGeneratorInterface;
 use App\Interfaces\ImageServiceInterface;
 use App\Interfaces\ImageLocalStorageServiceInterface;
@@ -29,6 +31,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ImageLocalStorageServiceInterface::class, ImageLocalStorageService::class);
         $this->app->bind(ThumbnailServiceInterface::class, ThumbnailService::class);
         $this->app->bind(ImageUrlGeneratorServiceInterface::class, ImageUrlGeneratorService::class);
+        $this->app->bind(MetadataBuilderInterface::class, MetadataBuilder::class);
 
     }
 

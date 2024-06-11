@@ -6,5 +6,5 @@ namespace App\Interfaces;
 
 interface ThumbnailServiceInterface
 {
-    public function generate(string $fileName, string $filePath, string $size): array;
+    public function generate(string $fileName, string $filePath, int $width, int $height): string;
 }

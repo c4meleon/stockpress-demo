@@ -4,61 +4,86 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\DTO\ImageData;
-use App\Http\Requests\ImageUploadRequest;
+use App\Builders\MetadataBuilderInterface;
+use App\Factories\ImageDataFactory;
 use App\Interfaces\ImageServiceInterface;
 use App\Interfaces\ImageUploadServiceInterface;
 use App\Interfaces\ImageUrlGeneratorServiceInterface;
 use App\Models\Images;
-use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 
 class ImageUploadService implements ImageUploadServiceInterface
 {
+    private const DEFAULT_THUMBNAIL_WIDTH = 250;
+    private const DEFAULT_THUMBNAIL_SIZE = '250xauto';
+
     public function __construct(private readonly ImageServiceInterface              $imageService,
                                 private readonly ImageNameGenerator                 $imageNameGenerator,
                                 private readonly ImageUrlGeneratorServiceInterface  $imageUrlGeneratorService,
-                                private readonly WeatherService                     $weatherService)
+                                private readonly WeatherService                     $weatherService,
+                                private readonly MetadataBuilderInterface           $metadataBuilder)
     {
     }
 
-    public function handleUpload(ImageUploadRequest $request): Images
+    /**
+     * @throws \Exception
+     */
+    public function handleUpload(UploadedFile $imageFile, string $name, string $email): Images
     {
-        $imageFile = $request->file('image');
-        if (!$imageFile->isValid()) {
-            throw new \Exception('No image file uploaded.');
-        }
-
         $originalFileName = $imageFile->getClientOriginalName();
         $realPath = $imageFile->getRealPath();
-
-        $uniqueFileName = $this->imageNameGenerator->generate($imageFile->getClientOriginalExtension());
+        $uniqueFileName = $this->generateUniqueFileName($imageFile);
 
         $exifData = $this->imageService->getExifData($realPath);
+        $this->processImage($uniqueFileName, $realPath);
 
-        $this->imageService->save($uniqueFileName, $realPath);
-        $this->imageService->generateThumbnails($uniqueFileName, $realPath, '250x250');
+        $imageUrl = $this->generateImageUrl($uniqueFileName);
+        $thumbnailsUrls = $this->generateThumbnailsUrls($uniqueFileName);
 
-        $imageUrl = $this->imageUrlGeneratorService->getUrl($uniqueFileName);
-        $thumbnailsUrls = $this->imageUrlGeneratorService->getThumbnailsUrls($uniqueFileName, ['250x250']);
+        $metadata = $this->buildMetadata($imageFile, $exifData, $realPath);
 
-        $metaData = [
-            'exif' => $exifData,
-            'fileSize' => $imageFile->getSize(),
-            'extension' => $imageFile->getClientOriginalExtension(),
-            'imageResolution' => $this->imageService->getResolution($realPath),
-            'temperature' => $this->weatherService->getTemperature(50.25841, 19.02754)
-        ];
-
-        $imageData = new ImageData(
-            $request->get('name'),
-            $request->get('email'),
+        $imageData = ImageDataFactory::create(
+            $name,
+            $email,
             $originalFileName,
             $uniqueFileName,
             $imageUrl,
             $thumbnailsUrls,
-            $metaData
+            $metadata
         );
 
         return Images::create($imageData->toArray());
+    }
+
+    private function generateUniqueFileName(UploadedFile $imageFile): string
+    {
+        return $this->imageNameGenerator->generate($imageFile->getClientOriginalExtension());
+    }
+
+    private function processImage(string $uniqueFileName, string $realPath): void
+    {
+        $this->imageService->save($uniqueFileName, $realPath);
+        $this->imageService->generateThumbnails($uniqueFileName, $realPath, self::DEFAULT_THUMBNAIL_WIDTH);
+    }
+
+    private function generateImageUrl(string $uniqueFileName): string
+    {
+        return $this->imageUrlGeneratorService->getUrl($uniqueFileName);
+    }
+
+    private function generateThumbnailsUrls(string $uniqueFileName): array
+    {
+        return $this->imageUrlGeneratorService->getThumbnailsUrls($uniqueFileName, [self::DEFAULT_THUMBNAIL_SIZE]);
+    }
+
+    private function buildMetadata(UploadedFile $imageFile, array $exifData, string $realPath): array
+    {
+        return $this->metadataBuilder
+            ->setExifData($exifData)
+            ->setFileSize($imageFile->getSize())
+            ->setExtension($imageFile->getClientOriginalExtension())
+            ->setImageResolution($this->imageService->getResolution($realPath))
+            ->setTemperature($this->weatherService->getTemperature(50.25841, 19.02754))
+            ->build();
     }
 }
