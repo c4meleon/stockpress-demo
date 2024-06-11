@@ -5,6 +5,7 @@ namespace App\Http\Requests;
 use App\Rules\ImageResolutionRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Validation\ValidationException;
 use JetBrains\PhpStorm\ArrayShape;
 
@@ -66,11 +67,14 @@ class ImageUploadRequest extends FormRequest
      * @param Validator $validator
      * @throws ValidationException
      */
-    protected function failedValidation(Validator $validator): void
+    protected function failedValidation(Validator $validator)
     {
-        throw new ValidationException(
-            $validator,
-            response()->json($validator->errors(), 422)
-        );
+        throw new HttpResponseException(response()->json([
+            'errors' => [
+                'message' => $validator->errors()->first(),
+                ...$validator->errors()->messages()
+            ],
+            'status' => false
+        ], 422));
     }
 }
