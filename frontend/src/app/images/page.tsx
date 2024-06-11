@@ -25,7 +25,6 @@ const Images: React.FC = () => {
   });
 
   const handleDownload = async (imageName: string) => {
-    console.log(imageName);
     try {
       await downloadImage(imageName);
     } catch (error) {
