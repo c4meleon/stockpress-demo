@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Builders;
 
+use App\Interfaces\MetadataBuilderInterface;
+
 class MetadataBuilder implements MetadataBuilderInterface
 {
     private array $metadata = [];

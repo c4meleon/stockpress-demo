@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Builders\MetadataBuilderInterface;
 use App\Factories\ImageDataFactory;
 use App\Interfaces\ImageServiceInterface;
 use App\Interfaces\ImageUploadServiceInterface;
 use App\Interfaces\ImageUrlGeneratorServiceInterface;
+use App\Interfaces\MetadataBuilderInterface;
 use App\Models\Images;
 use Illuminate\Http\UploadedFile;
 

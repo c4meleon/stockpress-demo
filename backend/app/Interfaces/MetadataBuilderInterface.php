@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Builders;
+namespace App\Interfaces;
 
 interface MetadataBuilderInterface
 {
